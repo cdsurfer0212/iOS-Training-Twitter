@@ -7,6 +7,12 @@
 //
 
 #import "AppDelegate.h"
+#import "LoginViewController.h"
+#import "NavigationController.h"
+#import "TwitterClient.h"
+#import "User.h"
+#import "Tweet.h"
+#import "TweetsViewController.h"
 
 @interface AppDelegate ()
 
@@ -14,10 +20,38 @@
 
 @implementation AppDelegate
 
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    NSLog(@"AppDelegate-didFinishLaunchingWithOptions");
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLogout) name:UserDidLogoutNotification object:nil];
+    
+    User *user = [User currentUser];
+    if (user != nil) {
+        //NSLog(@"Welcome %@", user.name);
+        TweetsViewController *tweetsViewController = [[TweetsViewController alloc] init];
+        
+        NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:tweetsViewController];
+
+        navigationController.navigationItem.title = @"Test";
+        
+        self.window.rootViewController = navigationController;
+    }
+    else {
+        NSLog(@"Not logged in");
+        self.window.rootViewController = [[LoginViewController alloc] init];
+    }
+    
+    [self.window makeKeyAndVisible];
+    
     return YES;
+}
+
+- (void)userDidLogout {
+    self.window.rootViewController = [[LoginViewController alloc] init];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -40,6 +74,11 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    [[TwitterClient sharedInstance] openURL:url];
+    return YES;
 }
 
 @end
