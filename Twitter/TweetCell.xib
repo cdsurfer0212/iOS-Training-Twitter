@@ -32,7 +32,7 @@
                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Pow-MW-DD2">
+                    <imageView clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Pow-MW-DD2">
                         <rect key="frame" x="10" y="10" width="48" height="48"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="48" id="Mv8-gm-Tz3"/>
@@ -148,9 +148,9 @@
                         <exclude reference="P1Y-cr-O4x"/>
                         <exclude reference="TCX-1e-zye"/>
                         <exclude reference="hVe-ET-ahO"/>
-                        <exclude reference="abq-hg-eUG"/>
                         <exclude reference="SZJ-GJ-42r"/>
                         <exclude reference="v9C-Yd-owW"/>
+                        <exclude reference="abq-hg-eUG"/>
                     </mask>
                 </variation>
             </tableViewCellContentView>

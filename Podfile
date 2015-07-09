@@ -8,6 +8,8 @@ pod 'AFNetworking'
 pod 'BDBOAuth1Manager'
 pod 'DateTools'
 pod 'FontAwesome-iOS'
+pod 'FXBlurView'
+pod 'MMDrawerController'
 pod 'SVPullToRefresh'
 
 end

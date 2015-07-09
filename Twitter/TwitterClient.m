@@ -34,14 +34,21 @@ NSString * const kTwitterBaseUrl = @"https://api.twitter.com";
     return instance;
 }
 
-- (void)loginWithCompletion:(void (^)(User *user, NSError *error))completion {
+- (void)loginWithCompletion:(void (^)(User *user, NSError *error))completion forceLogin:(BOOL)forceLogin {
     self.loginCompletion = completion;
     
     [self.requestSerializer removeAccessToken];
     [self fetchRequestTokenWithPath:@"oauth/request_token" method:@"GET" callbackURL:[NSURL URLWithString:@"cptwitterdemo://oauth"] scope:nil success:^(BDBOAuth1Credential *requestToken) {
         NSLog(@"got the request token!");
         
-        NSURL *authURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://api.twitter.com/oauth/authorize?oauth_token=%@", requestToken.token]];
+        NSString* authURLString = [NSString stringWithFormat:@"https://api.twitter.com/oauth/authorize?oauth_token=%@", requestToken.token];
+
+        if (forceLogin) {
+            authURLString = [authURLString stringByAppendingString:@"&force_login=1"];
+        }
+        
+        NSURL *authURL = [NSURL URLWithString:authURLString];
+        
         [[UIApplication sharedApplication] openURL:authURL];
     } failure:^(NSError *error) {
         NSLog(@"failed to get the request token!");
@@ -58,6 +65,7 @@ NSString * const kTwitterBaseUrl = @"https://api.twitter.com";
             //NSLog(@"current user: %@", responseObject);
             User *user = [[User alloc] initWithDictionary:responseObject];
             [User setCurrentUser:user];
+            [User addValidAccount:user];
             NSLog(@"current user: %@", user.name);
             self.loginCompletion(user, nil);
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -136,6 +144,28 @@ NSString * const kTwitterBaseUrl = @"https://api.twitter.com";
     
     [self POST:[NSString stringWithFormat:@"1.1/favorites/destroy.json?id=%@", tweetId] parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
         completion(responseObject, nil);
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        completion(nil, error);
+    }];
+}
+
+- (void)userTimelineWithParams:(NSDictionary *)params completion:(void (^)(NSArray *tweets, NSError *error))completion {
+    [self GET:@"1.1/statuses/user_timeline.json" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        if ([responseObject isKindOfClass:[NSArray class]]){
+            NSArray *tweets = [Tweet tweetsWithArray:responseObject];
+            completion(tweets, nil);
+        }
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        completion(nil, error);
+    }];
+}
+
+- (void)mentionsTimelineWithParams:(NSDictionary *)params completion:(void (^)(NSArray *tweets, NSError *error))completion {
+    [self GET:@"1.1/statuses/mentions_timeline.json" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        if ([responseObject isKindOfClass:[NSArray class]]){
+            NSArray *tweets = [Tweet tweetsWithArray:responseObject];
+            completion(tweets, nil);
+        }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         completion(nil, error);
     }];

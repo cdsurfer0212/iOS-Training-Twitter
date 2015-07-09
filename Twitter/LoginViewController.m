@@ -26,7 +26,7 @@
         else {
             // Present error view
         }
-    }];
+    } forceLogin:NO];
 }
 
 - (void)viewDidLoad {

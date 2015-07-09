@@ -16,9 +16,13 @@ extern NSString * const UserDidLogoutNotification;
 @property (nonatomic, strong) NSNumber *id;
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString *screenName;
+@property (nonatomic, strong) NSString *profileBannerUrl;
 @property (nonatomic, strong) NSString *profileImageUrl;
 @property (nonatomic) BOOL protected;
 @property (nonatomic, strong) NSString *tagline;
+
+@property (nonatomic, strong) NSNumber *followersCount;
+@property (nonatomic, strong) NSNumber *followingCount;
 
 - (id)initWithDictionary:(NSDictionary *)dictionary;
 
@@ -26,5 +30,8 @@ extern NSString * const UserDidLogoutNotification;
 + (void)setCurrentUser:(User *)currentUser;
 
 + (void)logout;
+
++ (NSMutableArray *)validAccounts;
++ (void)addValidAccount:(User *)validAccount;
 
 @end

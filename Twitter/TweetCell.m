@@ -11,6 +11,12 @@
 #import <NSDate+DateTools.h>
 #import <UIImageView+AFNetworking.h>
 
+@interface TweetCell ()
+
+@property (strong, nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
+
+@end
+
 @implementation TweetCell
 
 - (void)awakeFromNib {
@@ -33,6 +39,9 @@
     [self.storyTextLabel setNeedsLayout];
     [self.storyTextLabel layoutIfNeeded];
     */
+    
+    self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onProfileImageTapped:)];
+    [self.profileImageView addGestureRecognizer:self.tapGestureRecognizer];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -211,6 +220,10 @@
     //self.favoriteCountLabel.text = [NSString stringWithFormat:@"%@", self.tweet.favoriteCount];
     
     [self.delegate didChangeFavoriteFromTweetCell:self];
+}
+
+- (void)onProfileImageTapped:(UITapGestureRecognizer *)sender {
+    [self.delegate didTapProfileImageFromTweetCell:self];
 }
 
 @end

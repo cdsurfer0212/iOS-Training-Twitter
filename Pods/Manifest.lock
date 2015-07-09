@@ -25,6 +25,19 @@ PODS:
     - AFNetworking/NSURLSession (~> 2.5.0)
   - DateTools (1.6.1)
   - FontAwesome-iOS (0.0.4)
+  - FXBlurView (1.6.3)
+  - MMDrawerController (0.6.0):
+    - MMDrawerController/Core (= 0.6.0)
+    - MMDrawerController/MMDrawerBarButtonItem (= 0.6.0)
+    - MMDrawerController/MMDrawerVisualStates (= 0.6.0)
+    - MMDrawerController/Subclass (= 0.6.0)
+  - MMDrawerController/Core (0.6.0)
+  - MMDrawerController/MMDrawerBarButtonItem (0.6.0):
+    - MMDrawerController/Core
+  - MMDrawerController/MMDrawerVisualStates (0.6.0):
+    - MMDrawerController/Core
+  - MMDrawerController/Subclass (0.6.0):
+    - MMDrawerController/Core
   - SVPullToRefresh (0.4.1)
 
 DEPENDENCIES:
@@ -32,6 +45,8 @@ DEPENDENCIES:
   - BDBOAuth1Manager
   - DateTools
   - FontAwesome-iOS
+  - FXBlurView
+  - MMDrawerController
   - SVPullToRefresh
 
 SPEC CHECKSUMS:
@@ -39,6 +54,8 @@ SPEC CHECKSUMS:
   BDBOAuth1Manager: 2e28773b58f880fb36b5cd3efcf0b1fefbc78a99
   DateTools: 9bcc89e4f2f9004d8a7a2bd1b49269cf78968e65
   FontAwesome-iOS: 0fd503f7ae46780e17c2dd98e70fed30b5f90322
+  FXBlurView: c6d23f3d35af2c6282296a2930f61c6e2c788d01
+  MMDrawerController: e3a54a5570388463ad3b36975251575b50c4e1a0
   SVPullToRefresh: ba2e718695a43253d8bea6852d2960097dc15d8c
 
 COCOAPODS: 0.37.2

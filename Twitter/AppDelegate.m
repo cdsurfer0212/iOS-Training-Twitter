@@ -8,11 +8,14 @@
 
 #import "AppDelegate.h"
 #import "LoginViewController.h"
+#import "MenuViewController.h"
 #import "NavigationController.h"
 #import "TwitterClient.h"
 #import "User.h"
 #import "Tweet.h"
 #import "TweetsViewController.h"
+#import "ProfileViewController.h"
+#import <MMDrawerController.h>
 
 @interface AppDelegate ()
 
@@ -30,15 +33,39 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLogout) name:UserDidLogoutNotification object:nil];
     
     User *user = [User currentUser];
+    [User addValidAccount:user]; // need to move to another place
+    NavigationController *navigationController;
     if (user != nil) {
         //NSLog(@"Welcome %@", user.name);
-        TweetsViewController *tweetsViewController = [[TweetsViewController alloc] init];
+        //TweetsViewController *tweetsViewController = [[TweetsViewController alloc] init];
+        ProfileViewController *tweetsViewController = [[ProfileViewController alloc] init];
+        tweetsViewController.user = [User currentUser];
         
-        NavigationController *navigationController = [[NavigationController alloc] initWithRootViewController:tweetsViewController];
+        navigationController = [[NavigationController alloc] initWithRootViewController:tweetsViewController];
 
         navigationController.navigationItem.title = @"Test";
         
         self.window.rootViewController = navigationController;
+        
+        MMDrawerController *drawerController = [[MMDrawerController alloc] initWithCenterViewController:navigationController leftDrawerViewController:[[MenuViewController alloc] init] rightDrawerViewController:nil];
+        drawerController = [[MMDrawerController alloc] initWithCenterViewController:navigationController leftDrawerViewController:[[MenuViewController alloc] init] rightDrawerViewController:nil];
+        [drawerController setShowsShadow:YES];
+        [drawerController setRestorationIdentifier:@"MMDrawer"];
+        [drawerController setMaximumLeftDrawerWidth:320.0];
+        [drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeAll];
+        [drawerController setCloseDrawerGestureModeMask:MMCloseDrawerGestureModeAll];
+        
+        [drawerController setDrawerVisualStateBlock:^(MMDrawerController *drawerController, MMDrawerSide drawerSide, CGFloat percentVisible) {
+            /*
+             MMDrawerControllerDrawerVisualStateBlock block;
+             block = [[MMExampleDrawerVisualStateManager sharedManager] drawerVisualStateBlockForDrawerSide:drawerSide];
+             if (block) {
+                 block(drawerController, drawerSide, percentVisible);
+             }
+             */
+        }];
+        _drawerController = drawerController;
+        self.window.rootViewController = _drawerController;
     }
     else {
         NSLog(@"Not logged in");

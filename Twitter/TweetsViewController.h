@@ -8,6 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSInteger, TimelineType) {
+    TimelineTypeHome = 0,
+    TimelineTypeUser = 1,
+    TimelineTypeMentions = 2
+};
+
 @interface TweetsViewController : UIViewController
+
+@property (assign, nonatomic) TimelineType timelineType;
 
 @end

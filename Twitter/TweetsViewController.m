@@ -9,6 +9,7 @@
 #import "TweetsViewController.h"
 #import "ComposeViewController.h"
 #import "DetailViewController.h"
+#import "ProfileViewController.h"
 #import "User.h"
 #import "Tweet.h"
 #import "TweetCell.h"
@@ -215,6 +216,20 @@
     [self.tableView reloadData];
 }
 
+- (void)didTapProfileImageFromTweetCell:(TweetCell *)tweetCell {
+    ProfileViewController *profileViewController = [[ProfileViewController alloc] init];
+    
+    if (tweetCell.tweet.retweetedTweet) {
+        profileViewController.user = tweetCell.tweet.retweetedTweet.user;
+    }
+    else {
+        profileViewController.user = tweetCell.tweet.user;
+    }
+    
+    [self.navigationController pushViewController:profileViewController animated:YES];
+}
+
+
 #pragma mark - Private methods
 
 - (void)invokeFavoriteAPI:(Tweet *)tweet {
@@ -256,6 +271,33 @@
 }
 
 - (void)getTweets {
+    if (self.timelineType == TimelineTypeUser) {
+        [[TwitterClient sharedInstance] userTimelineWithParams:nil completion:^(NSArray *tweets, NSError *error) {
+            if (error) {
+                NSLog(@"%@", error);
+            }
+            
+            self.tweets = [NSMutableArray arrayWithArray:tweets];
+            [self.tableView reloadData];
+            [self.tableView.pullToRefreshView stopAnimating];
+            
+            self.lastId = [(Tweet *)[tweets lastObject] id];
+        }];
+    }
+    else if (self.timelineType == TimelineTypeMentions) {
+        [[TwitterClient sharedInstance] mentionsTimelineWithParams:nil completion:^(NSArray *tweets, NSError *error) {
+            if (error) {
+                NSLog(@"%@", error);
+            }
+            
+            self.tweets = [NSMutableArray arrayWithArray:tweets];
+            [self.tableView reloadData];
+            [self.tableView.pullToRefreshView stopAnimating];
+            
+            self.lastId = [(Tweet *)[tweets lastObject] id];
+        }];
+    }
+    else {
     [[TwitterClient sharedInstance] homeTimelineWithParams:nil completion:^(NSArray *tweets, NSError *error) {
         if (error) {
             NSLog(@"%@", error);
@@ -267,6 +309,7 @@
         
         self.lastId = [(Tweet *)[tweets lastObject] id];
     }];
+    }
 }
 
 - (void)getNewTweets {
@@ -321,6 +364,19 @@
     //self.title = @"Twitter";
     
     //self.navigationController.navigationBarHidden = YES;
+    
+    switch (self.timelineType) {
+        case TimelineTypeHome:
+            self.title = @"Home";
+            break;
+        case TimelineTypeUser:
+            self.title = @"User";
+            break;
+        case TimelineTypeMentions:
+            self.title = @"Mentions";
+        default:
+            break;
+    }
 }
 
 @end

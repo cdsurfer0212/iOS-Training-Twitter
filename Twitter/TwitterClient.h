@@ -13,7 +13,7 @@
 
 + (TwitterClient *)sharedInstance;
 
-- (void)loginWithCompletion:(void (^)(User *user, NSError *error))completion;
+- (void)loginWithCompletion:(void (^)(User *user, NSError *error))completion forceLogin:(BOOL)forceLogin;
 - (void)openURL:(NSURL *)url;
 
 - (void)homeTimelineWithParams:(NSDictionary *)params completion:(void (^)(NSArray *tweets, NSError *error))completion;
@@ -22,5 +22,7 @@
 - (void)cancelRetweetWithParams:(NSDictionary *)params completion:(void (^)(id responseObject, NSError *error))completion;
 - (void)favoriteWithParams:(NSDictionary *)params completion:(void (^)(id responseObject, NSError *error))completion;
 - (void)cancelFavoriteWithParams:(NSDictionary *)params completion:(void (^)(id responseObject, NSError *error))completion;
+- (void)userTimelineWithParams:(NSDictionary *)params completion:(void (^)(NSArray *tweets, NSError *error))completion;
+- (void)mentionsTimelineWithParams:(NSDictionary *)params completion:(void (^)(NSArray *tweets, NSError *error))completion;
 
 @end

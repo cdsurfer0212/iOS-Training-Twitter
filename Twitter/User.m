@@ -27,11 +27,15 @@ NSString * const UserDidLogoutNotification = @"UserDidLogoutNotification";
         self.id = dictionary[@"id"];
         self.name = dictionary[@"name"];
         self.screenName = dictionary[@"screen_name"];
+        self.profileBannerUrl = dictionary[@"profile_banner_url"];
         self.profileImageUrl = dictionary[@"profile_image_url"];
         self.profileImageUrl = [self.profileImageUrl stringByReplacingOccurrencesOfString:@"_normal." withString:@"_bigger."];
         //NSLog(@"%@", self.profileImageUrl);
         self.protected = [dictionary[@"protected"] boolValue];
         self.tagline = dictionary[@"description"];
+        
+        self.followersCount = dictionary[@"followers_count"];
+        self.followingCount = dictionary[@"friends_count"];
     }
     
     return self;
@@ -72,6 +76,62 @@ NSString * const kCurrentUserKey = @"kCurrentUserKey";
     [[TwitterClient sharedInstance].requestSerializer removeAccessToken];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:UserDidLogoutNotification object:nil];
+}
+
+static NSMutableArray *_validAccounts = nil;
+
+NSString * const kValidAccounts = @"kValidAccounts";
+
++ (NSMutableArray *)validAccounts {
+    if (_validAccounts == nil) {
+        NSData *dataArrayData = [[NSUserDefaults standardUserDefaults] objectForKey:kValidAccounts];
+        if (dataArrayData != nil) {
+            NSMutableArray *dataArray = [NSKeyedUnarchiver unarchiveObjectWithData:dataArrayData];
+            for (int i = 0; i < dataArray.count; i++) {
+                NSData *data = [dataArray objectAtIndex:i];
+                if (data != nil) {
+                    NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:NULL];
+                    User *user = [[User alloc] initWithDictionary:dictionary];
+                    [_validAccounts addObject:user];
+                }
+            }
+        }
+    }
+    
+    return _validAccounts;
+}
+
++ (void)addValidAccount:(User *)validAccount {
+    for (int i = 0; i < _validAccounts.count; i++) {
+        User *user = (User *)[_validAccounts objectAtIndex:i];
+        if (validAccount.id == user.id) {
+            [_validAccounts removeObjectAtIndex:i];
+        }
+    }
+    
+    if (validAccount != nil) {
+    if (_validAccounts == nil) {
+        _validAccounts = [[NSMutableArray alloc] init];
+    }
+    
+    [_validAccounts insertObject:validAccount atIndex:0];
+    }
+    
+    if (_validAccounts != nil) {
+        NSMutableArray *dataArray = [[NSMutableArray alloc] init];
+        for (int i = 0; i < _validAccounts.count; i++) {
+            User *user = (User *)[_validAccounts objectAtIndex:i];
+            NSData *data = [NSJSONSerialization dataWithJSONObject:user.dictionary options:0 error:NULL];
+            [dataArray addObject:data];
+        }
+
+        [[NSUserDefaults standardUserDefaults] setObject:dataArray forKey:kValidAccounts];
+    }
+    else {
+        [[NSUserDefaults standardUserDefaults] setObject:nil forKey:kValidAccounts];
+    }
+    
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 @end
