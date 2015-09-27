@@ -83,8 +83,10 @@ CGFloat const maxHeaderLabelTranslationDistance = 35.0;
     self.blurredHeaderImageView.alpha = 0;
     
     self.descriptionViewIndex = 0;
-    self.descriptionView1CenterPosition = self.descriptionView.center;
-    self.descriptionView2CenterPosition = CGPointMake(self.descriptionView1CenterPosition.x - self.view.frame.size.width, self.descriptionView1CenterPosition.y);
+    //self.descriptionView1CenterPosition = self.descriptionView.center;
+    self.descriptionView1CenterPosition = CGPointMake(self.view.frame.size.width, self.descriptionView.center.y);
+    //self.descriptionView2CenterPosition = CGPointMake(self.descriptionView1CenterPosition.x - self.view.frame.size.width, self.descriptionView1CenterPosition.y);
+    self.descriptionView2CenterPosition = CGPointMake(0, self.descriptionView1CenterPosition.y);
     self.descriptionViewPanGestureRecognizer.delegate = self;
     
     //NSLog(@"descriptionView1CenterPosition: %f", self.descriptionView1CenterPosition);
@@ -93,6 +95,15 @@ CGFloat const maxHeaderLabelTranslationDistance = 35.0;
     //NSLog(@"frame width: %f", self.view.frame.size.width);
     
     [self getTweets];
+}
+
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    
+    self.descriptionView1CenterPosition = self.descriptionView.center;
+    self.descriptionView2CenterPosition = CGPointMake(self.descriptionView1CenterPosition.x - self.view.frame.size.width, self.descriptionView1CenterPosition.y);
+    
+    NSLog(@"frame width: %f", self.view.frame.size.width);
 }
 
 - (void)didReceiveMemoryWarning {
@@ -289,7 +300,7 @@ CGFloat const maxHeaderLabelTranslationDistance = 35.0;
 }
 
 - (IBAction)onPageControlValueChanged:(id)sender {
-    [self changeDescriptionView];
+    //[self changeDescriptionView];
 }
 
 - (void)setDescriptionView:(NSInteger)index animated:(BOOL)animated {
@@ -349,9 +360,21 @@ CGFloat const maxHeaderLabelTranslationDistance = 35.0;
             break;
         }
         case UIGestureRecognizerStateChanged: {
+            if ((self.descriptionViewIndex == 0 && translation.x > 0) ||
+               (self.descriptionViewIndex == 1 && translation.x < 0)) {
+                return;
+            }
+            
             CGFloat minCenterX = 0;
             CGFloat maxCenterX = self.view.bounds.size.width;
-            CGPoint newCenterPosition = CGPointMake(fminf(maxCenterX, fmaxf(minCenterX, descriptionViewStartPosition.x + translation.x)), panGestureRecognizer.view.center.y);
+            //CGPoint newCenterPosition = CGPointMake(fminf(maxCenterX, fmaxf(minCenterX, descriptionViewStartPosition.x + translation.x)), panGestureRecognizer.view.center.y);
+            CGPoint newCenterPosition;
+            if (self.descriptionViewIndex == 0) {
+                newCenterPosition = CGPointMake(descriptionViewStartPosition.x + translation.x +  self.view.bounds.size.width, panGestureRecognizer.view.center.y);
+            } else if (self.descriptionViewIndex == 1) {
+                newCenterPosition = CGPointMake(descriptionViewStartPosition.x + translation.x, panGestureRecognizer.view.center.y);
+            }
+
             panGestureRecognizer.view.center = newCenterPosition;
             break;
         }
@@ -361,18 +384,22 @@ CGFloat const maxHeaderLabelTranslationDistance = 35.0;
             CGFloat maxCenterX = self.view.bounds.size.width;
             CGPoint newCenterPosition = CGPointMake(descriptionViewStartPosition.x + translation.x, panGestureRecognizer.view.center.y);
             
+            /*
             if (newCenterPosition.x < minCenterX || newCenterPosition.x > maxCenterX) {
                 return;
             }
+            */
             
+            /*
             if (velocity.x < -200) {
                 [self setDescriptionView:1 animated:YES];
             }
             else if (velocity.x > 200) {
                 [self setDescriptionView:0 animated:YES];
             }
+            */
             
-            if (fabsf(translation.x) > self.view.bounds.size.width / 2) {
+            if ((fabs(translation.x) > self.view.bounds.size.width / 2) && ((self.descriptionViewIndex == 0 && translation.x < 0) || (self.descriptionViewIndex == 1 && translation.x > 0))) {
                 [self changeDescriptionView];
             }
             else {
